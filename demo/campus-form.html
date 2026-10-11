@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>校招表单 Demo（用于测试插件）</title>
+    <style>
+      body {
+        font-family: "Microsoft YaHei", sans-serif;
+        margin: 0;
+        background: #f5f7fa;
+        color: #222;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .side {
+        width: 200px;
+        background: #fff;
+        border-right: 1px solid #e5e7eb;
+        padding: 16px;
+      }
+      .side div {
+        padding: 8px 0;
+        color: #666;
+      }
+      .side .active {
+        color: #1677ff;
+        font-weight: 600;
+      }
+      .main {
+        flex: 1;
+        padding: 24px;
+      }
+      .form-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+        gap: 12px;
+      }
+      .form-item > label {
+        width: 110px;
+        text-align: right;
+        color: #444;
+      }
+      .form-item > label::before {
+        content: "*";
+        color: #f5222d;
+        margin-right: 4px;
+      }
+      input,
+      select {
+        width: 260px;
+        height: 32px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        padding: 0 10px;
+      }
+      .radios {
+        display: flex;
+        gap: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="side">
+        <div class="active">基础信息 必填</div>
+        <div>教育经历 必填</div>
+        <div>实习经历 必填</div>
+        <div>项目经历 必填</div>
+      </aside>
+      <main class="main">
+        <h2>基础信息</h2>
+        <div class="form-item">
+          <label for="name">姓名</label>
+          <input id="name" placeholder="请输入" />
+        </div>
+        <div class="form-item">
+          <label for="englishName">英文名</label>
+          <input id="englishName" placeholder="请输入" />
+        </div>
+        <div class="form-item">
+          <label>性别</label>
+          <div class="radios">
+            <label><input type="radio" name="gender" value="男" /> 男</label>
+            <label><input type="radio" name="gender" value="女" /> 女</label>
+          </div>
+        </div>
+        <div class="form-item">
+          <label for="birthday">出生日期</label>
+          <input id="birthday" type="date" />
+        </div>
+        <div class="form-item">
+          <label for="phone">手机号码</label>
+          <input id="phone" />
+        </div>
+        <div class="form-item">
+          <label for="email">邮箱</label>
+          <input id="email" />
+        </div>
+        <div class="form-item">
+          <label for="politicalStatus">政治面貌</label>
+          <select id="politicalStatus">
+            <option value="">请选择</option>
+            <option>群众</option>
+            <option>共青团员</option>
+            <option>中共党员</option>
+            <option>中共预备党员</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label for="ethnicity">民族</label>
+          <input id="ethnicity" />
+        </div>
+        <div class="form-item">
+          <label for="height">身高</label>
+          <input id="height" placeholder="cm" />
+        </div>
+        <div class="form-item">
+          <label for="weight">体重</label>
+          <input id="weight" placeholder="kg" />
+        </div>
+        <div class="form-item">
+          <label for="nativePlace">籍贯</label>
+          <input id="nativePlace" />
+        </div>
+        <div class="form-item">
+          <label for="idNumber">证件号码</label>
+          <input id="idNumber" />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

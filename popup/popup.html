@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校招简历自动填写</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div>
+        <h1>校招自动填写</h1>
+        <p class="sub">上传简历 · LLM 解析 · 动态字段</p>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button type="button" class="tab active" data-tab="actions">填写</button>
+      <button type="button" class="tab" data-tab="resume">简历</button>
+      <button type="button" class="tab" data-tab="settings">设置</button>
+    </nav>
+
+    <section id="tab-actions" class="panel active">
+      <div class="card">
+        <button type="button" id="btn-fill-basic" class="btn primary">扫描并填写基础信息</button>
+        <button type="button" id="btn-fill-focused" class="btn">填充当前输入框 (Alt+F)</button>
+        <button type="button" id="btn-show-panel" class="btn ghost">打开点选填充面板</button>
+        <p class="hint">
+          提示：在页面输入框上按 <kbd>Alt</kbd> + 点击，可弹出「填入 / 选字段」。
+        </p>
+        <pre id="status" class="status">就绪</pre>
+      </div>
+    </section>
+
+    <section id="tab-resume" class="panel">
+      <div class="card upload-card">
+        <div class="upload-title">上传简历（PDF / Word / TXT / 图片）</div>
+        <p class="hint">LLM 解析后按内容动态展开字段与经历区块；原始文件不保存。</p>
+        <label class="btn primary file-btn upload-btn">
+          选择简历文件
+          <input
+            type="file"
+            id="resume-file"
+            accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/*"
+            hidden
+          />
+        </label>
+        <div id="resume-meta" class="resume-meta">尚未上传解析</div>
+        <pre id="resume-status" class="status compact">等待上传</pre>
+      </div>
+
+      <div id="resume-editor" class="resume-editor"></div>
+
+      <div class="row sticky-actions">
+        <button type="button" id="btn-save-resume" class="btn primary">保存修改</button>
+        <button type="button" id="btn-export" class="btn ghost">导出备份</button>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="panel">
+      <div class="card form-grid">
+        <label class="full check">
+          <input type="checkbox" id="useLLM" /> 填写时启用 LLM 字段映射（失败回退本地规则）
+        </label>
+        <label class="full check">
+          <input type="checkbox" id="clickFillEnabled" checked /> 启用 Alt+点击 智能填充面板
+        </label>
+        <div class="full preset-row">
+          <span class="preset-label">快捷填入</span>
+          <button type="button" class="btn tiny" data-preset="deepseek">DeepSeek</button>
+          <button type="button" class="btn tiny" data-preset="qwen">通义</button>
+          <button type="button" class="btn tiny" data-preset="openai">OpenAI</button>
+        </div>
+        <label class="full">API Base URL <input id="baseUrl" placeholder="https://api.deepseek.com/v1" /></label>
+        <label class="full">Model <input id="model" placeholder="deepseek-chat" /></label>
+        <label class="full">API Key <input id="apiKey" type="password" placeholder="sk-..." /></label>
+      </div>
+      <div class="row">
+        <button type="button" id="btn-save-settings" class="btn primary">保存设置</button>
+        <button type="button" id="btn-test-llm" class="btn">测试连接</button>
+      </div>
+      <pre id="settings-status" class="status compact">国内网络建议用 DeepSeek / 通义；改完务必先「保存」再「测试连接」。</pre>
+      <p class="hint">上传解析必须能连上 API。Base URL 示例：https://api.deepseek.com/v1 。不要填到 /chat/completions。</p>
+    </section>
+
+    <script src="../vendor/pdf.min.js"></script>
+    <script src="../vendor/jszip.min.js"></script>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

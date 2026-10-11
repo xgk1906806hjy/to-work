@@ -1,0 +1,96 @@
+.ca-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(22, 24, 35, 0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  z-index: 2147483646;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  max-width: min(90vw, 420px);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.ca-toast-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ca-click-panel {
+  position: absolute;
+  z-index: 2147483646;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+  padding: 12px;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #111827;
+  display: none;
+}
+
+.ca-click-panel-show {
+  display: block;
+}
+
+.ca-click-panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.ca-click-panel-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ca-click-panel-value {
+  font-size: 12px;
+  color: #374151;
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+
+.ca-click-panel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ca-click-panel-actions button,
+.ca-click-panel-pick button {
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #111827;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ca-click-panel-actions button[data-act="fill"] {
+  background: #1677ff;
+  border-color: #1677ff;
+  color: #fff;
+}
+
+.ca-click-panel-pick {
+  margin-top: 8px;
+  max-height: 180px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ca-click-panel-pick button {
+  text-align: left;
+}

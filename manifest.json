@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "校招简历自动填写",
+  "version": "0.3.1",
+  "description": "上传简历并由 LLM 解析为本地结构化数据，自动填写校招网申表单。",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["vendor/pdf.worker.min.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_title": "校招简历自动填写",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": [
+        "lib/resume-defaults.js",
+        "lib/field-dictionary.js",
+        "lib/dom-utils.js",
+        "content/scanner.js",
+        "content/filler.js",
+        "content/click-fill.js",
+        "content/content.js"
+      ],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "fill-focused": {
+      "suggested_key": {
+        "default": "Alt+F",
+        "mac": "Alt+F"
+      },
+      "description": "填充当前聚焦的输入框"
+    },
+    "scan-and-fill": {
+      "suggested_key": {
+        "default": "Alt+Shift+F",
+        "mac": "Alt+Shift+F"
+      },
+      "description": "扫描并自动填写当前页基础信息"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
