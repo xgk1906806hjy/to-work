@@ -1,0 +1,288 @@
+:root {
+  --bg: #f3f6fb;
+  --panel: #ffffff;
+  --text: #152033;
+  --muted: #5b6b82;
+  --line: #d7e0ee;
+  --primary: #1f6feb;
+  --danger: #c62828;
+  --sidebar: #0f1b2d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font: 14px/1.5 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.auth-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(160deg, #e8f0ff, #f7f9fc 55%);
+}
+
+.auth-card,
+.dialog-form {
+  width: min(420px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+  display: grid;
+  gap: 12px;
+}
+
+.auth-card h1,
+.dialog-form h3,
+.view h2 {
+  margin: 0;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: #fff;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.danger {
+  color: var(--danger);
+  border-color: #f0c2c2;
+}
+
+.btn.tiny {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.status {
+  margin: 0;
+  white-space: pre-wrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--sidebar);
+  color: #e8eef8;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 6px;
+}
+
+.nav-btn {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #c5d0e0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.nav-btn.active,
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-foot .btn {
+  color: #e8eef8;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.main {
+  padding: 24px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.view-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.stat-card .num {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.table-wrap {
+  margin-top: 12px;
+  overflow: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f7faff;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.detail {
+  margin-top: 12px;
+  padding: 12px;
+  background: #0f1b2d;
+  color: #dce7f7;
+  border-radius: 12px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+dialog {
+  border: 0;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 480px;
+  width: calc(100% - 32px);
+}
+
+dialog::backdrop {
+  background: rgba(15, 27, 45, 0.45);
+}
+
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .sidebar nav {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow: auto;
+  }
+
+  .sidebar-foot {
+    margin-top: 0;
+    width: 100%;
+  }
+}

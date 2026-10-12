@@ -4,7 +4,7 @@
   "version": "0.3.1",
   "description": "上传简历并由 LLM 解析为本地结构化数据，自动填写校招网申表单。",
   "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": ["http://*/*", "https://*/*", "http://127.0.0.1:3789/*", "http://localhost:3789/*"],
   "web_accessible_resources": [
     {
       "resources": ["vendor/pdf.worker.min.js"],

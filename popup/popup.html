@@ -17,6 +17,8 @@
     <nav class="tabs">
       <button type="button" class="tab active" data-tab="actions">填写</button>
       <button type="button" class="tab" data-tab="resume">简历</button>
+      <button type="button" class="tab" data-tab="apps">投递</button>
+      <button type="button" class="tab" data-tab="account">账号</button>
       <button type="button" class="tab" data-tab="settings">设置</button>
     </nav>
 
@@ -55,6 +57,42 @@
         <button type="button" id="btn-save-resume" class="btn primary">保存修改</button>
         <button type="button" id="btn-export" class="btn ghost">导出备份</button>
       </div>
+    </section>
+
+    <section id="tab-apps" class="panel">
+      <div class="card form-grid">
+        <p class="hint full">记录已投递的校招网站。未登录时仅保存在本机；登录后会同步到服务器。</p>
+        <label class="full">公司 <input id="app-company" placeholder="例：某某科技" /></label>
+        <label class="full">职位 <input id="app-title" placeholder="例：前端开发" /></label>
+        <label class="full">网址 <input id="app-url" placeholder="自动读取当前页，可改" /></label>
+        <label class="full">备注 <input id="app-notes" placeholder="可选" /></label>
+      </div>
+      <div class="row">
+        <button type="button" id="btn-app-from-tab" class="btn">读取当前页</button>
+        <button type="button" id="btn-app-save" class="btn primary">保存投递记录</button>
+      </div>
+      <pre id="apps-status" class="status compact">可先点「读取当前页」</pre>
+      <div id="apps-list" class="apps-list"></div>
+    </section>
+
+    <section id="tab-account" class="panel">
+      <div class="card form-grid">
+        <p class="hint full">登录可选。不登录也能正常填写；登录后可云端同步简历、LLM 设置与投递记录。</p>
+        <label class="full">服务器地址 <input id="serverUrl" placeholder="http://127.0.0.1:3789" /></label>
+        <label class="full">邮箱 <input id="auth-email" type="email" placeholder="you@example.com" /></label>
+        <label class="full">密码 <input id="auth-password" type="password" placeholder="至少 6 位" /></label>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="btn-save-server" class="btn ghost">保存服务器</button>
+        <button type="button" id="btn-register" class="btn">注册</button>
+        <button type="button" id="btn-login" class="btn primary">登录</button>
+        <button type="button" id="btn-logout" class="btn ghost">退出</button>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="btn-sync-up" class="btn">上传同步</button>
+        <button type="button" id="btn-sync-down" class="btn">拉取同步</button>
+      </div>
+      <pre id="account-status" class="status compact">未登录 · 本地模式</pre>
     </section>
 
     <section id="tab-settings" class="panel">
