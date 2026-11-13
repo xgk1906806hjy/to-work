@@ -298,6 +298,37 @@ kbd {
   margin-top: 4px;
 }
 
+.inline-add {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+  margin: 0 0 10px;
+  padding: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.inline-add[hidden] {
+  display: none !important;
+}
+
+.inline-add input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.inline-add-msg {
+  grid-column: 1 / -1;
+  color: #b42318;
+  font-size: 12px;
+  min-height: 0;
+}
+
 .btn.tiny {
   padding: 4px 8px;
   font-size: 12px;

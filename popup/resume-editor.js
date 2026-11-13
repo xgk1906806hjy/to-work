@@ -342,8 +342,15 @@ export function createResumeEditor(root) {
           <div class="section-title">基础信息</div>
           <div class="section-title-actions">
             <button type="button" class="btn tiny" data-act="toggle-basic">${showAllBasic ? "只显示有值/核心" : `显示全部${hiddenCount ? `（+${hiddenCount}）` : ""}`}</button>
-            <button type="button" class="btn tiny" data-act="add-basic-field">＋ 字段</button>
+            <button type="button" class="btn tiny" data-act="show-add-basic">＋ 字段</button>
           </div>
+        </div>
+        <div class="inline-add" id="add-basic-panel" hidden>
+          <input type="text" id="add-basic-key" placeholder="键名，如 wechat / hukou" />
+          <input type="text" id="add-basic-label" placeholder="显示名（可选）" />
+          <button type="button" class="btn tiny primary" data-act="confirm-add-basic">添加</button>
+          <button type="button" class="btn tiny ghost" data-act="cancel-add-basic">取消</button>
+          <div class="inline-add-msg" id="add-basic-msg"></div>
         </div>
         <div class="form-grid" id="basic-grid">${basicFieldsHtml}</div>
       </div>
@@ -363,7 +370,13 @@ export function createResumeEditor(root) {
           ${extraStrings}
         </div>
         <div class="section-actions">
-          <button type="button" class="btn" data-act="add-section">＋ 添加自定义区块</button>
+          <button type="button" class="btn" data-act="show-add-section">＋ 添加自定义区块</button>
+        </div>
+        <div class="inline-add" id="add-section-panel" hidden>
+          <input type="text" id="add-section-key" placeholder="区块键名，如 awards" />
+          <button type="button" class="btn tiny primary" data-act="confirm-add-section">添加</button>
+          <button type="button" class="btn tiny ghost" data-act="cancel-add-section">取消</button>
+          <div class="inline-add-msg" id="add-section-msg"></div>
         </div>
       </div>
     `;
@@ -430,13 +443,38 @@ export function createResumeEditor(root) {
       return;
     }
 
-    if (act === "add-basic-field") {
-      const key = prompt("新字段英文键名（如 hukou / wechat）");
+    if (act === "show-add-basic") {
+      const panel = root.querySelector("#add-basic-panel");
+      if (panel) {
+        panel.hidden = false;
+        const input = root.querySelector("#add-basic-key");
+        if (input) input.focus();
+      }
+      return;
+    }
+
+    if (act === "cancel-add-basic") {
+      const panel = root.querySelector("#add-basic-panel");
+      if (panel) panel.hidden = true;
+      const msg = root.querySelector("#add-basic-msg");
+      if (msg) msg.textContent = "";
+      return;
+    }
+
+    if (act === "confirm-add-basic") {
+      const keyInput = root.querySelector("#add-basic-key");
+      const labelInput = root.querySelector("#add-basic-label");
+      const msg = root.querySelector("#add-basic-msg");
+      const key = (keyInput?.value || "").trim();
+      const label = (labelInput?.value || "").trim();
       if (!key || !/^[\w\u4e00-\u9fa5]+$/.test(key)) {
-        alert("键名无效");
+        if (msg) msg.textContent = "键名无效：可用英文、数字、下划线或中文";
         return;
       }
       if (state.basic[key] == null) state.basic[key] = "";
+      if (label) {
+        BASIC_FIELD_META[key] = { label, type: "text", full: true };
+      }
       showAllBasic = true;
       render();
       return;
@@ -461,14 +499,34 @@ export function createResumeEditor(root) {
       return;
     }
 
-    if (act === "add-section") {
-      const key = prompt("新区块英文键名（如 awards / research）");
+    if (act === "show-add-section") {
+      const panel = root.querySelector("#add-section-panel");
+      if (panel) {
+        panel.hidden = false;
+        const input = root.querySelector("#add-section-key");
+        if (input) input.focus();
+      }
+      return;
+    }
+
+    if (act === "cancel-add-section") {
+      const panel = root.querySelector("#add-section-panel");
+      if (panel) panel.hidden = true;
+      const msg = root.querySelector("#add-section-msg");
+      if (msg) msg.textContent = "";
+      return;
+    }
+
+    if (act === "confirm-add-section") {
+      const keyInput = root.querySelector("#add-section-key");
+      const msg = root.querySelector("#add-section-msg");
+      const key = (keyInput?.value || "").trim();
       if (!key || !/^[\w]+$/.test(key)) {
-        alert("键名无效，请用英文/数字/下划线");
+        if (msg) msg.textContent = "键名无效：请用英文/数字/下划线";
         return;
       }
       if (RESERVED_TOP_KEYS.has(key) || key === "basic") {
-        alert("该键名已占用");
+        if (msg) msg.textContent = "该键名已占用";
         return;
       }
       if (!Array.isArray(state[key])) state[key] = [];
