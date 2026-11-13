@@ -31,6 +31,7 @@ const BASIC_FIELD_META = {
 };
 
 const CORE_BASIC_KEYS = ["name", "gender", "birthday", "phone", "email", "politicalStatus"];
+const BUILTIN_BASIC_KEYS = new Set(Object.keys(BASIC_FIELD_META));
 
 const SECTION_DEFS = {
   education: {
@@ -122,8 +123,22 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function labeledField({ label, name, value, type = "text", options = [], full = false }) {
+function labeledField({
+  label,
+  name,
+  value,
+  type = "text",
+  options = [],
+  full = false,
+  removable = false,
+  removeAct = "",
+  removeKey = ""
+}) {
   const fullCls = full || type === "textarea" || label.length > 6 ? "full" : "";
+  const removeBtn = removable
+    ? `<button type="button" class="field-remove" title="删除字段" data-act="${escapeHtml(removeAct)}" data-key="${escapeHtml(removeKey)}">×</button>`
+    : "";
+  const head = `<span class="field-label-row"><span>${escapeHtml(label)}</span>${removeBtn}</span>`;
   if (type === "select") {
     const opts = options
       .map((o) => {
@@ -132,13 +147,13 @@ function labeledField({ label, name, value, type = "text", options = [], full = 
         return `<option value="${escapeHtml(val)}" ${String(value) === String(val) ? "selected" : ""}>${escapeHtml(text)}</option>`;
       })
       .join("");
-    return `<label class="${fullCls}">${escapeHtml(label)}<select data-name="${escapeHtml(name)}">${opts}</select></label>`;
+    return `<label class="${fullCls}">${head}<select data-name="${escapeHtml(name)}">${opts}</select></label>`;
   }
   if (type === "textarea") {
-    return `<label class="full">${escapeHtml(label)}<textarea data-name="${escapeHtml(name)}" rows="3">${escapeHtml(value)}</textarea></label>`;
+    return `<label class="full">${head}<textarea data-name="${escapeHtml(name)}" rows="3">${escapeHtml(value)}</textarea></label>`;
   }
   const inputType = type === "date" ? "date" : "text";
-  return `<label class="${fullCls}">${escapeHtml(label)}<input data-name="${escapeHtml(name)}" type="${inputType}" value="${escapeHtml(value)}" /></label>`;
+  return `<label class="${fullCls}">${head}<input data-name="${escapeHtml(name)}" type="${inputType}" value="${escapeHtml(value)}" /></label>`;
 }
 
 /**
@@ -272,7 +287,10 @@ export function createResumeEditor(root) {
           value: state.basic[key] ?? "",
           type: meta.type || "text",
           options: meta.options || [],
-          full: !!meta.full
+          full: !!meta.full,
+          removable: true,
+          removeAct: "remove-basic-field",
+          removeKey: key
         });
       })
       .join("");
@@ -308,6 +326,7 @@ export function createResumeEditor(root) {
                 })
                 .join("");
 
+        const canRemoveSection = !SECTION_DEFS[sectionKey];
         return `<details class="section-block" data-section="${escapeHtml(sectionKey)}" ${items.length ? "open" : ""}>
           <summary>
             <span>${escapeHtml(title)}</span>
@@ -317,6 +336,11 @@ export function createResumeEditor(root) {
             ${cards}
             <div class="section-actions">
               <button type="button" class="btn" data-act="add-entry" data-section="${escapeHtml(sectionKey)}">＋ 添加一段</button>
+              ${
+                canRemoveSection
+                  ? `<button type="button" class="btn danger" data-act="remove-section" data-section="${escapeHtml(sectionKey)}">删除此区块</button>`
+                  : ""
+              }
             </div>
           </div>
         </details>`;
@@ -331,7 +355,10 @@ export function createResumeEditor(root) {
           name: `top.${k}`,
           value: v,
           type: "textarea",
-          full: true
+          full: true,
+          removable: true,
+          removeAct: "remove-top-field",
+          removeKey: k
         })
       )
       .join("");
@@ -439,6 +466,33 @@ export function createResumeEditor(root) {
 
     if (act === "toggle-basic") {
       showAllBasic = !showAllBasic;
+      render();
+      return;
+    }
+
+    if (act === "remove-basic-field") {
+      const key = btn.dataset.key;
+      if (!key) return;
+      delete state.basic[key];
+      if (!BUILTIN_BASIC_KEYS.has(key)) {
+        delete BASIC_FIELD_META[key];
+      }
+      render();
+      return;
+    }
+
+    if (act === "remove-top-field") {
+      const key = btn.dataset.key;
+      if (!key || RESERVED_TOP_KEYS.has(key)) return;
+      delete state[key];
+      render();
+      return;
+    }
+
+    if (act === "remove-section") {
+      const section = btn.dataset.section;
+      if (!section || SECTION_DEFS[section] || RESERVED_TOP_KEYS.has(section)) return;
+      delete state[section];
       render();
       return;
     }

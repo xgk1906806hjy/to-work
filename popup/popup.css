@@ -329,6 +329,92 @@ kbd {
   min-height: 0;
 }
 
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.field-remove {
+  border: 0;
+  background: transparent;
+  color: #8a97ab;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+.field-remove:hover {
+  color: #b42318;
+  background: #fff5f4;
+}
+
+.sync-confirm {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #f0c2c2;
+  border-radius: 8px;
+  background: #fff7f6;
+}
+
+.sync-confirm[hidden] {
+  display: none !important;
+}
+
+.sync-confirm-text {
+  margin: 0 0 8px;
+  color: #8a2c1a;
+  font-size: 12px;
+}
+
+.form-map-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.form-map-item {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.form-map-item .label {
+  font-weight: 600;
+}
+
+.form-map-item .meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.form-map-item select,
+.form-map-item input[type="text"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.form-map-item .row-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.form-map-item.skipped {
+  opacity: 0.55;
+}
+
 .btn.tiny {
   padding: 4px 8px;
   font-size: 12px;

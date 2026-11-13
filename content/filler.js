@@ -26,7 +26,8 @@
         const ok = await fillElement(el, item.value, item.action);
         CA.highlight(el, ok);
         results.push({ id: item.id, ok, value: item.value });
-        await CA.sleep(60);
+        // 日期/下拉要点开面板，多等一会
+        await CA.sleep(item.action === "date" || item.action === "select" ? 180 : 60);
       } catch (e) {
         results.push({ id: item.id, ok: false, reason: String(e.message || e) });
       }
@@ -35,7 +36,11 @@
   }
 
   async function fillElement(el, value, action) {
-    const act = action || CA.detectControlType(el);
+    const detected = CA.detectControlType(el);
+    // 指令可能标成 type，但 DOM 实际是 Element 日期/下拉
+    let act = action || detected;
+    if (detected === "date" && act !== "radio") act = "date";
+    if (detected === "select" && act !== "radio" && act !== "date") act = "select";
 
     if (act === "radio" || (el.tagName === "INPUT" && el.type === "radio")) {
       const root = el.closest(".el-form-item, .ant-form-item, form, .form-item") || document;
@@ -54,13 +59,25 @@
         const options = Array.from(el.options);
         const hit =
           options.find((o) => CA.cleanLabel(o.textContent) === String(value)) ||
-          options.find((o) => CA.cleanLabel(o.textContent).includes(String(value)));
+          options.find((o) => CA.cleanLabel(o.textContent).includes(String(value))) ||
+          options.find((o) => String(o.value) === String(value));
         if (!hit) return false;
         el.value = hit.value;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
         el.dispatchEvent(new Event("change", { bubbles: true }));
         return true;
       }
       return CA.selectCustomOption(el, value);
+    }
+
+    if (act === "date" || (el.type && (el.type === "date" || el.type === "month"))) {
+      if (el.type === "date" || el.type === "month") {
+        const variants = CA.formatDateVariants ? CA.formatDateVariants(value) : [String(value)];
+        el.focus();
+        CA.setNativeValue(el, variants[0] || String(value));
+        return true;
+      }
+      return CA.fillDatePicker(el, value);
     }
 
     if (el.isContentEditable) {
@@ -70,10 +87,27 @@
       return true;
     }
 
-    // text / date / textarea
-    el.focus();
-    CA.setNativeValue(el, String(value));
-    return true;
+    // 组件外壳：尽量填到内部 input
+    const dateWrap = el.closest?.(
+      ".el-date-editor, .el-date-picker, .ant-picker, .ant-calendar-picker"
+    );
+    if (dateWrap) return CA.fillDatePicker(el, value);
+
+    const selectWrap = el.closest?.(".el-select, .el-cascader, .ant-select, .ant-cascader-picker");
+    if (selectWrap) return CA.selectCustomOption(el, value);
+
+    // text / textarea
+    const input =
+      el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
+        ? el
+        : el.querySelector?.("input, textarea");
+    const target = input || el;
+    target.focus?.();
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      CA.setNativeValue(target, String(value));
+      return true;
+    }
+    return false;
   }
 
   /**

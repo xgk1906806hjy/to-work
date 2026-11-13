@@ -17,6 +17,7 @@
     <nav class="tabs">
       <button type="button" class="tab active" data-tab="actions">填写</button>
       <button type="button" class="tab" data-tab="resume">简历</button>
+      <button type="button" class="tab" data-tab="form">报名表</button>
       <button type="button" class="tab" data-tab="apps">投递</button>
       <button type="button" class="tab" data-tab="account">账号</button>
       <button type="button" class="tab" data-tab="settings">设置</button>
@@ -59,6 +60,28 @@
       </div>
     </section>
 
+    <section id="tab-form" class="panel">
+      <div class="card upload-card">
+        <div class="upload-title">上传 Word 报名表（.docx 表格）</div>
+        <p class="hint">按本地简历字段填入表格空白格；可预览映射后下载。仅支持 .docx。</p>
+        <label class="btn primary file-btn upload-btn">
+          选择报名表
+          <input
+            type="file"
+            id="form-file"
+            accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            hidden
+          />
+        </label>
+        <pre id="form-status" class="status compact">请先在「简历」页保存结构化简历，再上传报名表</pre>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="btn-form-remap" class="btn" disabled>重新匹配</button>
+        <button type="button" id="btn-form-download" class="btn primary" disabled>下载填好的 Word</button>
+      </div>
+      <div id="form-map-list" class="form-map-list"></div>
+    </section>
+
     <section id="tab-apps" class="panel">
       <div class="card form-grid">
         <p class="hint full">记录已投递的校招网站。未登录时仅保存在本机；登录后会同步到服务器。</p>
@@ -92,6 +115,14 @@
         <button type="button" id="btn-sync-up" class="btn">上传同步</button>
         <button type="button" id="btn-sync-down" class="btn">拉取同步</button>
       </div>
+      <p class="hint">上传同步会用本地数据覆盖云端；拉取同步会用云端数据覆盖本地。</p>
+      <div id="sync-confirm" class="sync-confirm" hidden>
+        <p id="sync-confirm-text" class="sync-confirm-text"></p>
+        <div class="row wrap">
+          <button type="button" id="btn-sync-confirm" class="btn primary">确认继续</button>
+          <button type="button" id="btn-sync-cancel" class="btn ghost">取消</button>
+        </div>
+      </div>
       <pre id="account-status" class="status compact">未登录 · 本地模式</pre>
     </section>
 
@@ -107,6 +138,7 @@
           <span class="preset-label">快捷填入</span>
           <button type="button" class="btn tiny" data-preset="deepseek">DeepSeek</button>
           <button type="button" class="btn tiny" data-preset="qwen">通义</button>
+          <button type="button" class="btn tiny" data-preset="sensenova">SenseNova</button>
           <button type="button" class="btn tiny" data-preset="openai">OpenAI</button>
         </div>
         <label class="full">API Base URL <input id="baseUrl" placeholder="https://api.deepseek.com/v1" /></label>

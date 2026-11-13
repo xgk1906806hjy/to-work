@@ -22,8 +22,13 @@
       "[contenteditable='true']",
       "[role='combobox']",
       ".el-input__inner",
+      ".el-select",
+      ".el-date-editor",
+      ".el-date-editor input",
       ".ant-input",
-      ".ant-select-selector"
+      ".ant-select-selector",
+      ".ant-picker",
+      ".ant-picker-input input"
     ];
 
     const seen = new Set();

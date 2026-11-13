@@ -1,6 +1,7 @@
 import { extractResumeContent } from "../lib/resume-extract.js";
 import { parseResumeWithLLM, testLLMConnection, normalizeBaseUrl } from "../lib/llm.js";
 import { createResumeEditor, summarize } from "./resume-editor.js";
+import { initDocxFormUi } from "./docx-form-ui.js";
 import {
   clearAuth,
   createApplication,
@@ -34,6 +35,10 @@ const PRESETS = {
   qwen: {
     baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
     model: "qwen-plus"
+  },
+  sensenova: {
+    baseUrl: "https://token.sensenova.cn/v1",
+    model: "sensenova-6.8-flash-lite"
   },
   openai: {
     baseUrl: "https://api.openai.com/v1",
@@ -307,17 +312,20 @@ document.getElementById("resume-file").addEventListener("change", async (e) => {
   }
 
   setResumeStatus(`正在读取：${file.name} ...`);
+  let progressTimer = null;
   try {
     const extracted = await extractResumeContent(file);
-    if (extracted.kind === "text") {
-      setResumeStatus(
-        `已提取文本 ${extracted.text.length} 字\n正在请求 ${normalizeBaseUrl(settings.baseUrl)} ...\n（请保持弹窗打开）`
-      );
-    } else {
-      setResumeStatus(
-        `已读取图片\n正在请求 ${normalizeBaseUrl(settings.baseUrl)} ...\n（图片需模型支持视觉；请保持弹窗打开）`
-      );
-    }
+    const endpoint = normalizeBaseUrl(settings.baseUrl);
+    const startedAt = Date.now();
+    const baseMsg =
+      extracted.kind === "text"
+        ? `已提取文本 ${extracted.text.length} 字\n正在请求 ${endpoint} ...\n模型：${settings.model || ""}\n（请保持弹窗打开；最长约 180 秒）`
+        : `已读取图片\n正在请求 ${endpoint} ...\n模型：${settings.model || ""}\n（图片需模型支持视觉；请保持弹窗打开；最长约 180 秒）`;
+    setResumeStatus(baseMsg);
+    progressTimer = setInterval(() => {
+      const sec = Math.round((Date.now() - startedAt) / 1000);
+      setResumeStatus(`${baseMsg}\n已等待 ${sec}s ...`);
+    }, 1000);
 
     const resume = await parseResumeWithLLM({
       apiKey: settings.apiKey,
@@ -328,6 +336,8 @@ document.getElementById("resume-file").addEventListener("change", async (e) => {
       dataUrl: extracted.dataUrl,
       fileName: extracted.fileName
     });
+    clearInterval(progressTimer);
+    progressTimer = null;
 
     const resumeMeta = {
       sourceFile: extracted.fileName || file.name,
@@ -348,6 +358,7 @@ document.getElementById("resume-file").addEventListener("change", async (e) => {
       setStatus(`本地已保存；云端同步失败：${err.message}`);
     }
   } catch (err) {
+    if (progressTimer) clearInterval(progressTimer);
     setResumeStatus(`解析失败：\n${err.message || err}`);
   }
 });
@@ -442,12 +453,23 @@ document.getElementById("btn-logout").addEventListener("click", async () => {
   setAccountStatus("已退出，继续使用本地模式");
 });
 
-document.getElementById("btn-sync-up").addEventListener("click", async () => {
-  const auth = await getAuthState();
-  if (!isLoggedIn(auth)) {
-    setAccountStatus("请先登录再上传同步");
-    return;
-  }
+const syncConfirmEl = document.getElementById("sync-confirm");
+const syncConfirmTextEl = document.getElementById("sync-confirm-text");
+let pendingSync = null;
+
+function hideSyncConfirm() {
+  pendingSync = null;
+  syncConfirmEl.hidden = true;
+  syncConfirmTextEl.textContent = "";
+}
+
+function askSyncConfirm(kind, message) {
+  pendingSync = kind;
+  syncConfirmTextEl.textContent = message;
+  syncConfirmEl.hidden = false;
+}
+
+async function runSyncUp() {
   setAccountStatus("正在上传同步...");
   try {
     const { resume, resumeMeta, settings } = await chrome.storage.local.get([
@@ -474,14 +496,9 @@ document.getElementById("btn-sync-up").addEventListener("click", async () => {
   } catch (err) {
     setAccountStatus(`上传同步失败：${err.message}`);
   }
-});
+}
 
-document.getElementById("btn-sync-down").addEventListener("click", async () => {
-  const auth = await getAuthState();
-  if (!isLoggedIn(auth)) {
-    setAccountStatus("请先登录再拉取同步");
-    return;
-  }
+async function runSyncDown() {
   setAccountStatus("正在拉取同步...");
   try {
     const resumeData = await syncResumeDown();
@@ -515,6 +532,44 @@ document.getElementById("btn-sync-down").addEventListener("click", async () => {
   } catch (err) {
     setAccountStatus(`拉取同步失败：${err.message}`);
   }
+}
+
+document.getElementById("btn-sync-up").addEventListener("click", async () => {
+  const auth = await getAuthState();
+  if (!isLoggedIn(auth)) {
+    hideSyncConfirm();
+    setAccountStatus("请先登录再上传同步");
+    return;
+  }
+  askSyncConfirm(
+    "up",
+    "上传同步会用本地数据覆盖云端已有的简历、LLM 设置，并追加本地投递记录。确认继续？"
+  );
+});
+
+document.getElementById("btn-sync-down").addEventListener("click", async () => {
+  const auth = await getAuthState();
+  if (!isLoggedIn(auth)) {
+    hideSyncConfirm();
+    setAccountStatus("请先登录再拉取同步");
+    return;
+  }
+  askSyncConfirm(
+    "down",
+    "拉取同步会用云端数据覆盖本地简历、LLM 设置与投递列表。确认继续？"
+  );
+});
+
+document.getElementById("btn-sync-confirm").addEventListener("click", async () => {
+  const kind = pendingSync;
+  hideSyncConfirm();
+  if (kind === "up") await runSyncUp();
+  if (kind === "down") await runSyncDown();
+});
+
+document.getElementById("btn-sync-cancel").addEventListener("click", () => {
+  hideSyncConfirm();
+  setAccountStatus("已取消同步");
 });
 
 document.getElementById("btn-app-from-tab").addEventListener("click", async () => {
@@ -572,5 +627,7 @@ document.getElementById("btn-app-save").addEventListener("click", async () => {
     setAppsStatus(`保存失败：${err.message}`);
   }
 });
+
+initDocxFormUi({ setStatus });
 
 loadAll().catch((e) => setStatus(String(e)));
